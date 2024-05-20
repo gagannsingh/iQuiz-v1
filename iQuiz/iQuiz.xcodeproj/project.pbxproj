@@ -20,7 +20,6 @@
 		660913032BF9CDB9001731A2 /* superheroImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 660913022BF9CDB9001731A2 /* superheroImage.png */; };
 		660913052BF9CDDD001731A2 /* scienceImage.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 660913042BF9CDDD001731A2 /* scienceImage.jpeg */; };
 		660913072BF9D49F001731A2 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660913062BF9D49F001731A2 /* CustomTableViewCell.swift */; };
-		660913092BFA9434001731A2 /* QuizViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660913082BFA9434001731A2 /* QuizViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +57,6 @@
 		660913022BF9CDB9001731A2 /* superheroImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = superheroImage.png; sourceTree = "<group>"; };
 		660913042BF9CDDD001731A2 /* scienceImage.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = scienceImage.jpeg; sourceTree = "<group>"; };
 		660913062BF9D49F001731A2 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
-		660913082BFA9434001731A2 /* QuizViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +110,6 @@
 				660912CE2BF98C08001731A2 /* AppDelegate.swift */,
 				660913062BF9D49F001731A2 /* CustomTableViewCell.swift */,
 				660912D02BF98C08001731A2 /* SceneDelegate.swift */,
-				660913082BFA9434001731A2 /* QuizViewController.swift */,
 				660912D22BF98C08001731A2 /* ViewController.swift */,
 				660912D42BF98C08001731A2 /* Main.storyboard */,
 				660912FE2BF9CD46001731A2 /* mathImage.jpeg */,
@@ -277,7 +274,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				660912D32BF98C08001731A2 /* ViewController.swift in Sources */,
-				660913092BFA9434001731A2 /* QuizViewController.swift in Sources */,
 				660912CF2BF98C08001731A2 /* AppDelegate.swift in Sources */,
 				660913072BF9D49F001731A2 /* CustomTableViewCell.swift in Sources */,
 				660912D12BF98C08001731A2 /* SceneDelegate.swift in Sources */,

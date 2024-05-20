@@ -13,6 +13,14 @@ struct Quiz {
   let image: UIImage?
 }
 
+struct Question: Decodable {
+    let text: String!
+    let answers: [String]!
+    let correctAnswerIndex: Int!
+    }
+
+
+
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return quizzes.count
@@ -58,53 +66,182 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return 161
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "showQuiz", sender: self)
+    }
     
-    //part 2
-    
-    
-    struct Question: Decodable {
-        let text: String
-        let answers: [String]
-        let correctAnswerIndex: Int
-        
-        // Implement the Decodable protocol
-        private enum CodingKeys: String, CodingKey {
-            case text
-            case answers
-            case correctAnswer = "correct_answer_index" // Adjust key name if needed
-        }
-        
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            text = try container.decode(String.self, forKey: .text)
-            answers = try container.decode([String].self, forKey: .answers)
-            correctAnswerIndex = try container.decode(Int.self, forKey: .correctAnswer)
-        }
-        
-        func downloadQuizData(completion: @escaping ([Question]?, Error?) -> Void) {
-            guard let url = URL(string: "http://tednewardsandbox.site44.com/questions.json") else { return }
-            let session = URLSession.shared
-            let task = session.dataTask(with: url) { data, response, error in
-                if let error = error {
-                    completion(nil, error)
-                    print(error.localizedDescription)
-                } else if let data = data {
-                    do {
-                      let decoder = JSONDecoder()
-                      let questions = try decoder.decode([Question].self, from: data)
-                      completion(questions, nil)
-                    } catch {
-                        completion(nil, error)
-                        print(error.localizedDescription)
-                    }
-                }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showQuiz" {
+            if let destinationVC = segue.destination as? QuizViewController,
+               let indexPath = table.indexPathForSelectedRow {
+                destinationVC.quiz = quizzes[indexPath.row]
             }
-            task.resume()
         }
         
         
-        
+    }
+}
+
+
+class QuizViewController: UIViewController {
+    
+    @IBOutlet weak var questionLabel: UILabel!
+    
+    //button 0,1,2,3
+    @IBOutlet var buttons: [UIButton]!
+    
+    var selectedAnswerIndex: Int? // Stores the selected button index
+
+    
+    @IBOutlet weak var home: UIButton!
+    
+    @IBAction func homeClicked(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @IBOutlet weak var submit: UIButton!
+
+    
+    var quiz: Quiz?
+    var Questions = [Question]()
+    var QNumber = Int()
+    var AnswerNumber = Int()
+    var currentQuestionIndex = 0
+
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if let quiz = quiz {
+              self.title = quiz.title
+              // Load questions based on the selected quiz
+          }
+        displayQuestion()
 
     }
+    
+    func displayQuestion() {
+        guard currentQuestionIndex < Questions.count else {
+            showResults()
+            return
+        }
+
+        let question = Questions[currentQuestionIndex]
+        questionLabel.text = question.text
+        selectedAnswerIndex = nil
+
+        for (index, button) in buttons.enumerated() {
+            button.setTitle(question.answers[index], for: .normal)
+            button.backgroundColor = .systemBackground
+            button.isUserInteractionEnabled = true
+            button.tag = index
+            button.addTarget(self, action: #selector(answerSelected(_:)), for: .touchUpInside)
+        }
+    }
+    
+    @objc func answerSelected(_ sender: UIButton) {
+        selectedAnswerIndex = sender.tag
+        for button in buttons {
+            button.backgroundColor = button.tag == selectedAnswerIndex ? .lightGray : .systemBackground
+        }
+    }
+    
+    
+    func loadQuestions(for quiz: Quiz) {
+        Questions = [
+            Question(text: "A + B", answers: ["a", "b", "c", "d"], correctAnswerIndex: 2)
+        ]
+    }
+    
+    func pickQuestion() {
+        if Questions.count > 0 {
+            QNumber = 0
+            questionLabel.text = Questions[QNumber].text
+            AnswerNumber = Questions[QNumber].correctAnswerIndex
+            for i in 0..<buttons.count {
+                buttons[i].setTitle(Questions[QNumber].answers[i], for: .normal)
+            }
+            Questions.remove(at: QNumber)
+        } else {
+            NSLog("Done for now")
+        }
+    }
+    
+    @IBAction func btn1(_ sender: Any) {
+        if AnswerNumber == 0{
+            pickQuestion()
+        }
+        else{
+        NSLog("Wrong")
+        }
+    }
+    
+    @IBAction func btn2(_ sender: Any) {
+        if AnswerNumber == 1{
+            pickQuestion()
+        }
+        else{
+        NSLog("Wrong")
+        }
+    }
+    
+    @IBAction func btn3(_ sender: Any) {
+        if AnswerNumber == 2{
+            pickQuestion()
+        }
+        else{
+        NSLog("Wrong")
+        }
+    }
+    
+    @IBAction func btn4(_ sender: Any) {
+        if AnswerNumber == 3{
+            pickQuestion()
+        }
+        else{
+        NSLog("Wrong")
+        }
+    }
+    
+    @IBAction func buttonTapped(_ sender: UIButton) {
+      let selectedIndex = sender.tag  // Assuming buttons have tags set (0-3)
+
+      // Disable interaction after selection
+      sender.isUserInteractionEnabled = false
+      sender.backgroundColor = .lightGray // Change color to indicate selection
+
+      selectedAnswerIndex = selectedIndex
+    }
+    
+    @IBAction func submitTapped(_ sender: Any, currentQuestionIndex: Int) {
+        guard let selectedAnswerIndex = selectedAnswerIndex else {
+            let alert = UIAlertController(title: "No Answer Selected", message: "Please select an answer before submitting.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true)
+            return
+        }
+
+        let correctAnswerIndex = Questions[currentQuestionIndex].correctAnswerIndex
+        let isCorrect = (selectedAnswerIndex == correctAnswerIndex)
+
+        // Provide feedback to the user
+        let feedback = isCorrect ? "Correct!" : "Wrong! The correct answer was \(Questions[currentQuestionIndex].answers[correctAnswerIndex!])."
+        let alert = UIAlertController(title: "Feedback", message: feedback, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            self.currentQuestionIndex += 1
+            self.displayQuestion()
+        }))
+        present(alert, animated: true)
+    }
+    
+    func showResults() {
+        let alert = UIAlertController(title: "Quiz Completed", message: "You have completed the quiz!", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            self.navigationController?.popViewController(animated: true)
+        }))
+        present(alert, animated: true)
+    }
+    
+    
+    
     
 }
